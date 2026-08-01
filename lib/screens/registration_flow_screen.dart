@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/models.dart';
-import 'login_screen.dart';
+import 'home_screen.dart';
 
 class RegistrationFlowScreen extends StatelessWidget {
   const RegistrationFlowScreen({super.key});
@@ -43,6 +43,7 @@ class RegistrationFlowScreen extends StatelessWidget {
             // Current step form content
             Expanded(
               child: SingleChildScrollView(
+                key: ValueKey(authProvider.currentStep),
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,9 +99,9 @@ class RegistrationFlowScreen extends StatelessWidget {
                   height: 30,
                   decoration: BoxDecoration(
                     color: isCompleted
-                        ? Colors.green
+                        ? const Color(0xFFFF6B35) // Warm Coral
                         : isActive
-                            ? theme.primaryColor
+                            ? theme.primaryColor // Deep Indigo
                             : Colors.grey[100],
                     shape: BoxShape.circle,
                     border: Border.all(
@@ -127,7 +128,7 @@ class RegistrationFlowScreen extends StatelessWidget {
                     child: Container(
                       height: 2.5,
                       color: isCompleted
-                          ? Colors.green
+                          ? const Color(0xFFFF6B35) // Warm Coral
                           : index == currentStep
                               ? theme.primaryColor.withValues(alpha: 0.5)
                               : Colors.grey[200],
@@ -468,9 +469,9 @@ class RegistrationFlowScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.05),
+              color: const Color(0xFF059669).withValues(alpha: 0.05), // Soft Indigo tint
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
+              border: Border.all(color: const Color(0xFF059669).withValues(alpha: 0.2)),
             ),
             child: Column(
               children: [
@@ -600,7 +601,7 @@ class RegistrationFlowScreen extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF0C831F), width: 1.5),
+              borderSide: const BorderSide(color: Color(0xFF059669), width: 1.5), // Deep Indigo focus
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
@@ -655,8 +656,10 @@ class RegistrationFlowScreen extends StatelessWidget {
                         backgroundColor: Colors.green,
                       ),
                     );
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    // Navigate directly to HomeScreen since the user is auto-logged in
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      (route) => false,
                     );
                   }
                 } else {
@@ -664,14 +667,14 @@ class RegistrationFlowScreen extends StatelessWidget {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0C831F), // Zoodo Green
+                backgroundColor: const Color(0xFF059669), // Deep Indigo
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 elevation: 0,
               ),
               child: Text(
-                isLastStep ? 'Submit & Login' : 'Next Step',
+                isLastStep ? 'Submit & Start' : 'Next Step',
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ),

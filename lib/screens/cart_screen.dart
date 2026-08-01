@@ -45,7 +45,7 @@ class CartScreen extends StatelessWidget {
                             Text(
                               'Ordering from ${cart.currentShop!.name}',
                               style: const TextStyle(
-                                color: Color(0xFF0C831F), // Zoodo Green
+                                color: Color(0xFF059669), // Deep Indigo
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5,
@@ -60,6 +60,10 @@ class CartScreen extends StatelessWidget {
 
                           // Delivery details card
                           if (user != null) _buildDeliveryDetailsCard(user, cart.currentShop, theme),
+                          const SizedBox(height: 16),
+                          
+                          // Free Delivery Progress Banner
+                          _buildFreeDeliveryProgress(cart),
                           const SizedBox(height: 16),
 
                           // Price details card
@@ -98,7 +102,7 @@ class CartScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0C831F), // Zoodo Green
+              backgroundColor: const Color(0xFF059669), // Deep Indigo
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -174,22 +178,22 @@ class CartScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFF0C831F), width: 1.0),
+                      border: Border.all(color: const Color(0xFF059669), width: 1.0),
                     ),
                     child: Row(
                       children: [
                         IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: const Icon(Icons.remove, size: 12, color: Color(0xFF0C831F)),
+                          icon: const Icon(Icons.remove, size: 12, color: Color(0xFF059669)),
                           onPressed: () => cart.removeSingleItem(cartItem.item.id),
                         ),
                         Text(
                           cartItem.quantity.toString(),
-                          style: const TextStyle(color: Color(0xFF0C831F), fontWeight: FontWeight.bold, fontSize: 12),
+                          style: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.bold, fontSize: 12),
                         ),
                         IconButton(
                           visualDensity: VisualDensity.compact,
-                          icon: const Icon(Icons.add, size: 12, color: Color(0xFF0C831F)),
+                          icon: const Icon(Icons.add, size: 12, color: Color(0xFF059669)),
                           onPressed: () => cart.addItem(cartItem.item, cart.currentShop!),
                         ),
                       ],
@@ -229,7 +233,7 @@ class CartScreen extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.directions_bike_rounded, color: Color(0xFF0C831F), size: 18),
+              Icon(Icons.directions_bike_rounded, color: Color(0xFF059669), size: 18), // Emerald Bike
               SizedBox(width: 8),
               Text(
                 'Delivery Address',
@@ -302,9 +306,14 @@ class CartScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _buildBillRow('Items Total', '₹${cart.totalAmount.toStringAsFixed(2)}'),
           const SizedBox(height: 6),
-          _buildBillRow('Delivery Fee (Distance base)', '₹${cart.deliveryFee.toStringAsFixed(2)}'),
+          _buildBillRow(
+            'Delivery Fee (Distance base)', 
+            '₹${cart.actualDeliveryFee.toStringAsFixed(2)}',
+            isFree: cart.totalAmount >= 200,
+            originalValue: '₹${cart.deliveryFee.toStringAsFixed(2)}',
+          ),
           const SizedBox(height: 6),
-          _buildBillRow('Taxes & GST (5%)', '₹${cart.tax.toStringAsFixed(2)}'),
+          _buildBillRow('Platform Fee', '₹${cart.platformFee.toStringAsFixed(2)}'),
           const Divider(color: Colors.black12, height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -315,7 +324,7 @@ class CartScreen extends StatelessWidget {
               ),
               Text(
                 '₹${cart.grandTotal.toStringAsFixed(2)}',
-                style: const TextStyle(color: Color(0xFF0C831F), fontWeight: FontWeight.w800, fontSize: 16),
+                style: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w800, fontSize: 16), // Deep Indigo
               ),
             ],
           ),
@@ -324,12 +333,77 @@ class CartScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBillRow(String label, String value) {
+  Widget _buildFreeDeliveryProgress(CartProvider cart) {
+    if (cart.totalAmount >= 200) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF059669).withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF059669).withOpacity(0.3)),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Color(0xFF059669), size: 20),
+            SizedBox(width: 8),
+            Text(
+              'Yay! You get Free Delivery',
+              style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    final double remaining = 200 - cart.totalAmount;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Add ₹${remaining.toStringAsFixed(2)} more to get Free Delivery',
+              style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBillRow(String label, String value, {bool isFree = false, String? originalValue}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: const TextStyle(color: Colors.black45, fontSize: 12)),
-        Text(value, style: const TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w500)),
+        if (isFree && originalValue != null)
+          Row(
+            children: [
+              Text(
+                originalValue,
+                style: const TextStyle(
+                  color: Colors.black38,
+                  fontSize: 12,
+                  decoration: TextDecoration.lineThrough,
+                  decorationColor: Colors.red,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                'Free',
+                style: TextStyle(color: Color(0xFF059669), fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ],
+          )
+        else
+          Text(value, style: const TextStyle(color: Colors.black87, fontSize: 12, fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -348,7 +422,7 @@ class CartScreen extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0C831F), // Zoodo Green
+          backgroundColor: const Color(0xFF059669), // Emerald Green Button
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -356,7 +430,7 @@ class CartScreen extends StatelessWidget {
         ),
         child: const Center(
           child: Text(
-            'Choose address at next step',
+            'Proceed to Payment',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ),

@@ -1,9 +1,15 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/models.dart';
 
 class CartProvider extends ChangeNotifier {
   final Map<String, CartItem> _items = {};
   Shop? _currentShop;
+
+  CartProvider() {
+    _loadCart();
+  }
 
   Map<String, CartItem> get items => {..._items};
   Shop? get currentShop => _currentShop;
@@ -22,19 +28,68 @@ class CartProvider extends ChangeNotifier {
 
   double get deliveryFee {
     if (_items.isEmpty || _currentShop == null) return 0.0;
-    // Base delivery fee of 30 plus 15 per km
     return 30.0 + (_currentShop!.distanceKm * 15.0).roundToDouble();
   }
 
-  double get tax {
-    if (_items.isEmpty) return 0.0;
-    // 5% GST
-    return (totalAmount * 0.05).roundToDouble();
+  double get actualDeliveryFee {
+    return totalAmount >= 200 ? 0.0 : deliveryFee;
   }
 
-  double get grandTotal => totalAmount + deliveryFee + tax;
+  double get platformFee {
+    if (_items.isEmpty) return 0.0;
+    return 7.0;
+  }
 
-  // Returns true if addition was successful, false if we need confirmation to switch shops
+  double get grandTotal {
+    return totalAmount + actualDeliveryFee + platformFee;
+  }
+
+  Future<void> _saveCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    // Save items
+    final Map<String, dynamic> itemsJson = {};
+    _items.forEach((key, value) {
+      itemsJson[key] = value.toJson();
+    });
+    await prefs.setString('cart_items', json.encode(itemsJson));
+
+    // Save shop
+    if (_currentShop != null) {
+      await prefs.setString('cart_shop', json.encode(_currentShop!.toJson()));
+    } else {
+      await prefs.remove('cart_shop');
+    }
+  }
+
+  Future<void> _loadCart() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      final String? shopString = prefs.getString('cart_shop');
+      if (shopString != null) {
+        _currentShop = Shop.fromJson(json.decode(shopString));
+        // If the shop is from old mock data (doesn't have UUID), clear the cart
+        if (!_currentShop!.id.contains('-')) {
+          clearCart();
+          return;
+        }
+      }
+
+      final String? itemsString = prefs.getString('cart_items');
+      if (itemsString != null) {
+        final Map<String, dynamic> itemsJson = json.decode(itemsString);
+        itemsJson.forEach((key, value) {
+          _items[key] = CartItem.fromJson(value);
+        });
+      }
+      notifyListeners();
+    } catch (e) {
+      // In case of parsing error, log it
+      print('Error loading cart: $e');
+    }
+  }
+
   bool addItem(MenuItem item, Shop shop) {
     if (_currentShop != null && _currentShop!.id != shop.id) {
       return false; // Prompt user to clear cart from previous shop
@@ -55,6 +110,7 @@ class CartProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+    _saveCart();
     return true;
   }
 
@@ -66,6 +122,7 @@ class CartProvider extends ChangeNotifier {
       () => CartItem(item: item, quantity: 1),
     );
     notifyListeners();
+    _saveCart();
   }
 
   void removeSingleItem(String itemId) {
@@ -85,6 +142,7 @@ class CartProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+    _saveCart();
   }
 
   void removeItem(String itemId) {
@@ -93,11 +151,13 @@ class CartProvider extends ChangeNotifier {
       _currentShop = null;
     }
     notifyListeners();
+    _saveCart();
   }
 
   void clearCart() {
     _items.clear();
     _currentShop = null;
     notifyListeners();
+    _saveCart();
   }
 }

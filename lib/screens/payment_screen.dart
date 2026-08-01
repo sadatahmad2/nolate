@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/cart_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/order_provider.dart';
+import '../models/models.dart';
 import 'tracking_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -20,27 +22,46 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void _processPayment() async {
     final cart = Provider.of<CartProvider>(context, listen: false);
-    final auth = Provider.of<AuthProvider>(context, listen: false);
     final order = Provider.of<OrderProvider>(context, listen: false);
 
-    if (cart.currentShop == null || auth.currentUser == null) return;
+    if (cart.currentShop == null) return;
 
-    setState(() {
-      _isProcessing = true;
-    });
+    // Use Supabase user (works for both Google and manual login)
+    final supabaseUser = Supabase.instance.client.auth.currentUser;
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+
+    // Build AppUser from available source
+    AppUser? appUser = auth.currentUser;
+    if (appUser == null && supabaseUser != null) {
+      appUser = AppUser(
+        name: supabaseUser.userMetadata?['full_name'] ?? supabaseUser.email ?? 'Customer',
+        email: supabaseUser.email ?? '',
+        mobile: '',
+        password: '',
+        address: 'Default Address',
+        location: const Coordinate(0.5, 0.5),
+      );
+    }
+
+    if (appUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to place an order')),
+      );
+      return;
+    }
+
+    setState(() { _isProcessing = true; });
 
     await Future.delayed(const Duration(seconds: 2));
 
-    order.placeOrder(
+    await order.placeOrder(
       shop: cart.currentShop!,
       items: cart.itemsList,
       totalAmount: cart.totalAmount,
-      deliveryFee: cart.deliveryFee,
-      tax: cart.tax,
-      user: auth.currentUser!,
+      deliveryFee: cart.actualDeliveryFee,
+      tax: cart.platformFee,
+      user: appUser,
     );
-
-    cart.clearCart();
 
     setState(() {
       _isProcessing = false;
@@ -139,7 +160,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF0C831F).withValues(alpha: 0.15)),
+        border: Border.all(color: const Color(0xFF059669).withValues(alpha: 0.15)), // Deep Indigo border
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.01),
@@ -161,11 +182,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
               const SizedBox(height: 4),
               Text(
                 '₹${cart.grandTotal.toStringAsFixed(2)}',
-                style: const TextStyle(color: Color(0xFF0C831F), fontSize: 22, fontWeight: FontWeight.w800),
+                style: const TextStyle(color: Color(0xFF059669), fontSize: 22, fontWeight: FontWeight.w800), // Deep Indigo
               ),
             ],
           ),
-          const Icon(Icons.shield_rounded, color: Colors.green, size: 28),
+          const Icon(Icons.shield_rounded, color: Color(0xFF059669), size: 28), // Deep Indigo shield
         ],
       ),
     );
@@ -192,7 +213,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF0C831F) : Colors.black.withValues(alpha: 0.04),
+            color: isSelected ? const Color(0xFF059669) : Colors.black.withValues(alpha: 0.04), // Deep Indigo selection
             width: isSelected ? 1.5 : 1.0,
           ),
         ),
@@ -200,7 +221,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? const Color(0xFF0C831F) : Colors.black38,
+              color: isSelected ? const Color(0xFF059669) : Colors.black38,
               size: 22,
             ),
             const SizedBox(width: 14),
@@ -226,7 +247,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF0C831F) : Colors.black26,
+                  color: isSelected ? const Color(0xFF059669) : Colors.black26,
                   width: 2,
                 ),
               ),
@@ -237,7 +258,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         height: 10,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFF0C831F),
+                          color: Color(0xFF059669),
                         ),
                       ),
                     )
@@ -273,7 +294,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 });
               },
               backgroundColor: Colors.white,
-              selectedColor: const Color(0xFF0C831F),
+              selectedColor: const Color(0xFF059669),
               labelStyle: TextStyle(
                 color: isSelected ? Colors.white : Colors.black87,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -302,7 +323,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       child: ElevatedButton(
         onPressed: _processPayment,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0C831F), // Zoodo Green
+          backgroundColor: const Color(0xFF059669),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -328,7 +349,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0C831F)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF059669)), // Deep Indigo
                 strokeWidth: 4,
               ),
               const SizedBox(height: 24),
@@ -394,7 +415,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0C831F), // Zoodo Green
+                  backgroundColor: const Color(0xFF059669),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

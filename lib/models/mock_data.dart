@@ -9,7 +9,7 @@ final List<Shop> mockShops = [
     deliveryTimeMinutes: 20,
     distanceKm: 1.2,
     imageUrl: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&q=80&w=400',
-    location: const Coordinate(0.25, 0.35),
+    location: const Coordinate(28.630, 77.218), // Connaught Place
     menu: [
       const MenuItem(
         id: 'item_1_1',
@@ -61,7 +61,7 @@ final List<Shop> mockShops = [
     deliveryTimeMinutes: 15,
     distanceKm: 0.8,
     imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400',
-    location: const Coordinate(0.65, 0.25),
+    location: const Coordinate(28.524, 77.206), // Saket
     menu: [
       const MenuItem(
         id: 'item_2_1',
@@ -113,7 +113,7 @@ final List<Shop> mockShops = [
     deliveryTimeMinutes: 25,
     distanceKm: 2.5,
     imageUrl: 'https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?auto=format&fit=crop&q=80&w=400',
-    location: const Coordinate(0.45, 0.75),
+    location: const Coordinate(28.641, 77.121), // Rajouri Garden
     menu: [
       const MenuItem(
         id: 'item_3_1',
@@ -157,7 +157,7 @@ final List<Shop> mockShops = [
     deliveryTimeMinutes: 18,
     distanceKm: 1.9,
     imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=400',
-    location: const Coordinate(0.80, 0.65),
+    location: const Coordinate(28.490, 77.088), // DLF Cyber City
     menu: [
       const MenuItem(
         id: 'item_4_1',
@@ -193,6 +193,70 @@ final List<Shop> mockShops = [
       ),
     ],
   ),
+  Shop(
+    id: 'shop_5',
+    name: 'Gift Emporium',
+    category: 'Gifts & Toys',
+    rating: 4.8,
+    deliveryTimeMinutes: 25,
+    distanceKm: 0.5, // Nearest gift store
+    imageUrl: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=400',
+    location: const Coordinate(28.558, 77.202), // Green Park
+    menu: [
+      const MenuItem(
+        id: 'item_5_1',
+        name: 'Red Roses Bouquet',
+        description: 'A beautiful bouquet of fresh red roses.',
+        price: 499.0,
+        category: 'Gifts',
+        imageUrl: 'https://images.unsplash.com/photo-1563241527-300ecb9eb5c0?auto=format&fit=crop&q=80&w=200',
+      ),
+      const MenuItem(
+        id: 'item_5_2',
+        name: 'Chocolate Hamper',
+        description: 'Assorted premium chocolates in a gift box.',
+        price: 799.0,
+        category: 'Gifts',
+        imageUrl: 'https://images.unsplash.com/photo-1548883354-94cb02a465c0?auto=format&fit=crop&q=80&w=200',
+      ),
+      const MenuItem(
+        id: 'item_5_3',
+        name: 'Teddy Bear',
+        description: 'Soft and cuddly plush teddy bear.',
+        price: 350.0,
+        category: 'Toys',
+        imageUrl: 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&q=80&w=200',
+      ),
+    ],
+  ),
+  Shop(
+    id: 'shop_6',
+    name: 'Party Needs & Gifts',
+    category: 'Gifts & Party',
+    rating: 4.3,
+    deliveryTimeMinutes: 30,
+    distanceKm: 3.2,
+    imageUrl: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&q=80&w=400',
+    location: const Coordinate(28.625, 77.370), // Sector 62 Noida
+    menu: [
+      const MenuItem(
+        id: 'item_6_1',
+        name: 'Birthday Cake 1kg',
+        description: 'Delicious chocolate truffle birthday cake.',
+        price: 650.0,
+        category: 'Gifts',
+        imageUrl: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=200',
+      ),
+      const MenuItem(
+        id: 'item_6_2',
+        name: 'Party Balloons',
+        description: 'Pack of 50 colorful balloons.',
+        price: 120.0,
+        category: 'Party',
+        imageUrl: 'https://images.unsplash.com/photo-1530103862676-de88d601d32d?auto=format&fit=crop&q=80&w=200',
+      ),
+    ],
+  ),
 ];
 
 final List<Rider> mockRiders = [
@@ -202,7 +266,7 @@ final List<Rider> mockRiders = [
     vehicleNumber: 'DL 3S AB 1234',
     rating: 4.8,
     phone: '+91 9876543210',
-    currentPosition: const Coordinate(0.25, 0.35), // Initially at shop location
+    currentPosition: const Coordinate(28.630, 77.218), // Initially at shop location
   ),
   Rider(
     name: 'Shyam Singh',
@@ -210,7 +274,7 @@ final List<Rider> mockRiders = [
     vehicleNumber: 'DL 9S XY 5678',
     rating: 4.7,
     phone: '+91 9988776655',
-    currentPosition: const Coordinate(0.65, 0.25),
+    currentPosition: const Coordinate(28.524, 77.206),
   ),
   Rider(
     name: 'Rohit Kumar',
@@ -218,6 +282,6 @@ final List<Rider> mockRiders = [
     vehicleNumber: 'E-BIKE 9091',
     rating: 4.9,
     phone: '+91 9123456789',
-    currentPosition: const Coordinate(0.45, 0.75),
+    currentPosition: const Coordinate(28.641, 77.121),
   ),
 ];

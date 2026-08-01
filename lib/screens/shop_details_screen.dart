@@ -28,7 +28,7 @@ class ShopDetailsScreen extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 180,
             pinned: true,
-            backgroundColor: const Color(0xFF0C513F), // Zoodo Forest Green
+            backgroundColor: const Color(0xFF059669), // Deep Indigo
             elevation: 0.5,
             leading: CircleAvatar(
               backgroundColor: Colors.white.withValues(alpha: 0.8),
@@ -145,7 +145,7 @@ class ShopDetailsScreen extends StatelessWidget {
                         child: Text(
                           categoryName.toUpperCase(),
                           style: const TextStyle(
-                            color: Color(0xFF0C831F), // Zoodo Green category tag
+                            color: Color(0xFF059669), // Deep Indigo Category
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.0,
@@ -279,13 +279,13 @@ class ShopDetailsScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF0C831F), // Zoodo Green
+                    foregroundColor: const Color(0xFFFF6B35), // Warm Coral
                     elevation: 1,
                     shadowColor: Colors.black.withValues(alpha: 0.1),
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
-                      side: const BorderSide(color: Color(0xFF0C831F), width: 1.0),
+                      side: const BorderSide(color: Color(0xFFFF6B35), width: 1.0),
                     ),
                   ),
                   child: const Text('ADD', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
@@ -294,7 +294,7 @@ class ShopDetailsScreen extends StatelessWidget {
                 Container(
                   height: 32,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0C831F), // Zoodo Green
+                    color: const Color(0xFFFF6B35), // Warm Coral
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
@@ -348,7 +348,7 @@ class ShopDetailsScreen extends StatelessWidget {
                 cart.forceAddItem(item, shop);
                 Navigator.of(context).pop();
               },
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0C831F)),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF059669)), // Deep Indigo
               child: const Text('Clear & Add', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ],
@@ -371,7 +371,7 @@ class ShopDetailsScreen extends StatelessWidget {
           height: 52,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFF0C831F), // Zoodo green
+            color: const Color(0xFFFF6B35), // Warm Coral checkout pill
             borderRadius: BorderRadius.circular(14),
             boxShadow: [
               BoxShadow(
